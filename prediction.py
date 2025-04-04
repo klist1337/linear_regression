@@ -9,10 +9,21 @@
 
 
 import sys
+import json
+from shared import *
 
 if __name__== "__main__" :
-    mileage = input("Enter the mileage: ")
-    theta0 = 0 # set to 0 before training
-    theta1 = 0 # set to 0 before training
-    estimatePrice = theta0 + (theta1 * int(mileage))
-    print(f"estimate price = {estimatePrice}")
+    
+    mileage_input = float(input("Enter the mileage: "))
+    theta0, theta1 = 0, 0
+    mileage_data, price, mileage_norm, mileage_min, mileage_max = load_data()
+    try:
+        with open("model.json", "r") as f :
+            model = json.load(f)
+        theta0, theta1 = model['theta0'], model['theta1']
+        mileage_input = (mileage_input - mileage_min) / (mileage_max - mileage_min)
+        estimate_price = theta0 + theta1 * mileage_input
+        print(f"Estimate price: {estimate_price:.2f}")
+    except FileNotFoundError:
+        estimate_price = theta0 + theta1 * mileage_input
+        print(f"Estimate price: {estimate_price}")
